@@ -14,15 +14,14 @@
 ### Docker
 1. 拉取Docker镜像
 
-    docker pull <镜像名称>
+    docker pull ghcr.io/tech-podcasts/speech_enhancement:latest
     
-    镜像名称可以在项目的Dockerfile中查看。
 
 2. 启动容器
 
-    docker run -p <主机端口>:8080 -d <镜像名称>
+    docker run -p <主机端口>:8080 -d speech_enhancement:latest
 
-    其中，主机端口是指用户在主机上访问该服务的端口，容器端口是指服务运行在容器内的端口。
+    其中，主机端口是指用户在主机上访问该服务的端口。
 
 ## 使用
 你可以通过浏览器访问主机的端口，即可使用该服务。
