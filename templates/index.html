@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" data-theme="lofi">
+<head>
+    <meta charset="utf-8">
+    <title>Speech Enhancement</title>
+</head>
+<link href="/dist/full.css" rel="stylesheet" type="text/css"/>
+<script src="/dist/tailwindcss.js"></script>
+<body>
+<div class="container">
+    <div class="flex flex-col items-center h-screen w-screen">
+        <div class="flex flex-col items-center justify-center mt-20">
+            <h1 class="text-5xl font-bold">Speech Enhancement</h1>
+            <p class="text-xl m-6">基于深度学习的语音增强工具</p>
+        </div>
+        <div class="flex items-center justify-center mt-20" id="upload">
+            <input  id="fileInput" type="file" class="file-input file-input-bordered file-input-primary w-full max-w-md" />
+            <button class="btn btn-primary ml-6"  onclick="uploadFile()">提交</button>
+        </div>
+        <div class="flex flex-col items-center justify-center mt-20" id="status">
+            <h2 class="text-3xl font-bold animate-pulse" id="statusTitle"></h2>
+            <div class="flex items-center justify-center mt-6">
+                <button class="btn btn-primary hidden" id="other" onclick="other()">转码其他文件</button>
+                <button class="btn btn-primary hidden ml-6" id="download">下载</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let UUID = ""
+    let statusTimer = null;
+    let statusZh = ["未处理", "转码", "降噪", "归一化","已完成","内部错误"];
+    let upload = document.getElementById('upload');
+    let statusTitle = document.getElementById('statusTitle');
+    let status = document.getElementById('status');
+    let download = document.getElementById('download');
+    let other_dom = document.getElementById('other');
+    function checkStatus() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/status?uuid='+UUID);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText);
+                if (response.data.status) {
+                    if (response.data.status < 4) {
+                        statusTitle.textContent = statusZh[response.data.status] + " ...";
+                    } else if (response.data.status === 4) {
+                        statusTitle.textContent = statusZh[response.data.status];
+                        clearInterval(statusTimer);
+                        download.classList.remove("hidden");
+                        other_dom.classList.remove("hidden");
+                        statusTitle.classList.remove("animate-pulse");
+                        download.onclick = function () {
+                            window.location.href = "/download?uuid=" + UUID;
+                        }
+                    } else if (response.data.status === 5){
+                        statusTitle.textContent = statusZh[response.data.status];
+                        clearInterval(statusTimer);
+                    }
+                }
+            }
+        };
+        xhr.send();
+    }
+    function uploadFile() {
+        let fileInput = document.getElementById('fileInput');
+        let file = fileInput.files[0];
+        console.log(file)
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload');
+        let formData = new FormData();
+        formData.append("file", file);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText);
+                UUID = response.data.uuid;
+                upload.classList.add("hidden");
+                status.classList.remove("hidden");
+                statusTimer = setInterval(checkStatus,1000)
+
+                console.log('上传成功');
+            } else {
+                console.log('上传失败');
+            }
+        };
+        xhr.send(formData);
+    }
+    function other() {
+       if(confirm("请确保已经下载了文件，否则文件将会丢失！")){
+           window.location.href = "/";
+       }
+    }
+</script>
+</body>
