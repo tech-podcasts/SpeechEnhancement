@@ -1,9 +1,12 @@
-# Speech Enhancement
 
 
 <div align="center">
 <img src="./docs/img/preview.png">
 </div>
+
+# Speech Enhancement
+
+Speech Enhancement 是一个基于深度学习模型的语音降噪和去混响工具。
 
 - 支持多种格式音频文件
 - 基于 CPU 推理的语音增强模型
