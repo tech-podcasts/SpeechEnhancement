@@ -5,24 +5,8 @@ on:
     tags:
       - "v*.*"
 env:
-  IMAGE_NAME: SpeechEnhancement
-jobs:
-  get-tags:
-    runs-on: ubuntu-20.04
-    env:
-      TZ: Asia/Shanghai
-    outputs:
-      tags: ${{ steps.set-output-id.outputs.tags }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: set-output
-        id: set-output-id
-        run: |
-          VERSION=edge
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
-          fi
-          echo "tags=${VERSION}" >> $GITHUB_OUTPUT        
+  IMAGE_NAME: speech_enhancement
+jobs:       
   push-ghcr:
     runs-on: ubuntu-20.04
     env:
@@ -37,11 +21,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PACKAGES_TOKEN }}
       - name: Build && Push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest      
