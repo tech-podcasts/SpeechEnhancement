@@ -14,11 +14,23 @@
 ### Docker
 1. 拉取Docker镜像
 
+    **dockerHub**
+
+    docker pull goomd/ghcr.io.tech-podcasts.speech_enhancement:latest 
+
+    **Github Packages**
+
     docker pull ghcr.io/tech-podcasts/speech_enhancement:latest
     
 
 2. 启动容器
-
+    
+    **dockerHub**
+    
+    docker run -p <主机端口>:8080 -d goomd/ghcr.io.tech-podcasts.speech_enhancement:latest
+    
+    **Github Packages**
+    
     docker run -p <主机端口>:8080 -d speech_enhancement:latest
 
     其中，主机端口是指用户在主机上访问该服务的端口。
